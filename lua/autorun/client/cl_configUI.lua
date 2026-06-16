@@ -108,6 +108,8 @@ net.Receive("BetterBuild_OpenConfig", function()
     addSection("Building mode settings")
     addCheckbox("Allow building players to spawn NPCs", "betterbuild_allowNPCSpawn")
     addCheckbox("Block NPC Damage in Build", "betterbuild_blockNPCDamageInBuild")
+    addCheckbox("If someone leaves build mode, should they respawn?", "betterbuild_exitingBuildResultsinRespawn")
+
 
 
     addSection("Display Settings")

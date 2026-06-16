@@ -19,6 +19,8 @@ CreateConVar("betterbuild_pvpWarningMessage", "You can't join build mode while i
 CreateConVar("betterbuild_allowNoclipOutsideBuildMode", "false", CVAR_SERVER, "If false, players can only noclip while in build mode")
 CreateConVar("betterbuild_allowNPCSpawn", "false", CVAR_SERVER, "If false, building players cannot spawn NPCs")
 CreateConVar("betterbuild_blockNPCDamageInBuild", "true", CVAR_SERVER, "If NPCs owned by building players cannot deal damage")
+CreateConVar("betterbuild_exitingBuildResultsinRespawn", "true", CVAR_SERVER, "If enabled, every player that leaves build mode will be respawned")
+
 
 local addNetwork = util.AddNetworkString
 local receive = net.Receive
@@ -98,6 +100,12 @@ local function toggleBuildMode(ply)
         ply:SetNWBool("InBuildMode", false)
         ply:SetNoTarget(false)
         ply:SetMoveType(MOVETYPE_WALK)
+
+        if toBool(GetConVar("betterbuild_exitingBuildResultsinRespawn"))
+        and not ply:IsFrozen() then
+            ply:Spawn()
+        end
+
         if toBool(GetConVar("betterbuild_announceExitingBuildMode")) then
             broadcastMsg("betterbuild_announceExitMessage", "betterbuild_announceExitMessageColor", ply)
         end
@@ -131,43 +139,65 @@ hook.Add("EntityTakeDamage", "BetterBuild.PreventDamage", function(target, dmg)
     local inflictor = dmg:GetInflictor()
 
     if target:IsPlayer() and isInBuild(target:SteamID64()) then
-        dmg:SetDamage(0) return true
+        dmg:SetDamage(0)
+        return true
+    end
+
+    local targetOwner = getEntityOwner(target)
+
+    if IsValid(targetOwner)
+    and targetOwner:IsPlayer()
+    and isInBuild(targetOwner:SteamID64()) then
+        dmg:SetDamage(0)
+        return true
     end
 
     if IsValid(attacker) then
-        if attacker:IsPlayer() and isInBuild(attacker:SteamID64()) then
-            dmg:SetDamage(0) return true
+        local buildPlayer
+
+        if attacker:IsPlayer() then
+            buildPlayer = attacker
+        elseif attacker:IsVehicle() then
+            buildPlayer = attacker:GetDriver()
         end
 
-        if attacker:IsVehicle() then
-            local driver = attacker:GetDriver()
-            if IsValid(driver) and isInBuild(driver:SteamID64()) then
-                dmg:SetDamage(0) return true
-            end
+        if IsValid(buildPlayer)
+        and isInBuild(buildPlayer:SteamID64()) then
+            dmg:SetDamage(0)
+            return true
         end
 
-        if attacker:IsNPC() then
-           local owner = getEntityOwner(attacker)
-           if IsValid(owner) and owner:IsPlayer() and isInBuild(owner:SteamID64()) then
-              if toBool(GetConVar("betterbuild_blockNPCDamageInBuild")) then
-                 dmg:SetDamage(0) return true
-              end
-           end
-        end
-
-
-        if not attacker:IsPlayer() then
+        if attacker:IsNPC()
+        and toBool(GetConVar("betterbuild_blockNPCDamageInBuild")) then
             local owner = getEntityOwner(attacker)
-            if IsValid(owner) and owner:IsPlayer() and isInBuild(owner:SteamID64()) then
-                dmg:SetDamage(0) return true
+
+            if IsValid(owner)
+            and owner:IsPlayer()
+            and isInBuild(owner:SteamID64()) then
+                dmg:SetDamage(0)
+                return true
             end
+        end
+
+        local owner = getEntityOwner(attacker)
+
+        if IsValid(owner)
+        and owner:IsPlayer()
+        and isInBuild(owner:SteamID64()) then
+            dmg:SetDamage(0)
+            return true
         end
     end
 
-    if IsValid(inflictor) and inflictor ~= attacker then
+    if IsValid(inflictor)
+    and inflictor ~= attacker then
         local owner = getEntityOwner(inflictor)
-        if IsValid(owner) and owner:IsPlayer() and isInBuild(owner:SteamID64()) then
-            dmg:SetDamage(0) return true
+
+        if IsValid(owner)
+        and owner:IsPlayer()
+        and isInBuild(owner:SteamID64()) then
+            dmg:SetDamage(0)
+            return true
         end
     end
 end)
