@@ -109,7 +109,7 @@ net.Receive("BetterBuild_OpenConfig", function()
     addCheckbox("Allow building players to spawn NPCs", "betterbuild_allowNPCSpawn")
     addCheckbox("Block NPC Damage in Build", "betterbuild_blockNPCDamageInBuild")
 
-    
+
     addSection("Display Settings")
     addTextEntry("Build Text", "betterbuild_text")
     addTextEntry("Font", "betterbuild_font")

@@ -13,7 +13,7 @@ BuildSystem.Colors = {
 ---@return nil
 function BuildSystem:print(arg)
     local msg = ""
-    
+
     if IsValid(arg) and arg:IsPlayer() then
         msg = msg .. " [PLAYER] " .. arg:Nick()
     elseif IsValid(arg) then
@@ -21,7 +21,7 @@ function BuildSystem:print(arg)
     elseif isstring(arg) then
         msg = msg .. " " .. arg
     end
-    
+
     if SERVER then
         MsgC(
             BuildSystem.Colors["Version"], self.Version,
@@ -29,7 +29,7 @@ function BuildSystem:print(arg)
             color_white, msg, "\n"
         )
     end
-    
+
     if CLIENT then
         MsgC(
             BuildSystem.Colors["Version"], self.Version,

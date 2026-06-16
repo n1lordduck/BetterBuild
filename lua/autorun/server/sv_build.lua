@@ -155,7 +155,7 @@ hook.Add("EntityTakeDamage", "BetterBuild.PreventDamage", function(target, dmg)
            end
         end
 
-        
+
         if not attacker:IsPlayer() then
             local owner = getEntityOwner(attacker)
             if IsValid(owner) and owner:IsPlayer() and isInBuild(owner:SteamID64()) then

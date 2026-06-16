@@ -4,7 +4,7 @@ net.Receive("BetterBuild_ChatMsg", function()
     local msg = net.ReadString()
     local showPrefix = net.ReadBool()
     local msgColor = net.ReadColor()
-    
+
     if showPrefix then
         chat.AddText(
             Color(255, 165, 0), "[Build] ",

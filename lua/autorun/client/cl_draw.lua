@@ -12,7 +12,7 @@ net.Receive("BetterBuild_SyncAll", function()
     BetterBuild.Config.font    = net.ReadString()
     BetterBuild.Config.color   = net.ReadColor()
     BetterBuild.Config.warning = net.ReadString()
-    
+
     surface.CreateFont("BetterBuild_Display", {
         font   = BetterBuild.Config.font,
         size   = 18,
@@ -28,7 +28,7 @@ hook.Add("HUDPaint", "BetterBuild_DrawBillboardText", function()
     if not text or text == "" then return end
 
     local localPos = lp:GetPos()
-    local maxDist = 10 * 39.37 
+    local maxDist = 10 * 39.37
 
     for _, ply in ipairs(player.GetAll()) do
         if ply == lp then continue end
